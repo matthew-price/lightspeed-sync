@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="adExportTool:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/adExportTool_jar</output-path>
+    <root id="archive" name="adExportTool.jar">
+      <element id="module-output" name="adExportTool" />
+    </root>
+  </artifact>
+</component>
