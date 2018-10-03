@@ -15,29 +15,29 @@ public class App {
     private static final String COMMA_DELIMITER = ",";
     private static final String NEW_LINE_DELIMITER = "\n";
     private static final String FILE_HEADER = "unique_sis_user_id,username,first_name,last_name,unique_sis_school_id,grade,email,user_type,password,authentication";
-    static LdapContext ctx = null;
-    static String username;
-    static String password;
-    static String address;
-    static String baseDN;
-    static ArrayList<String> staffSearchOUs = new ArrayList<String>();
-    static ArrayList<String> studentSearchOUs = new ArrayList<String>();
-    static ArrayList<String> groupSearchOUs = new ArrayList<String>();
-    static HashMap schoolToSisMap = new HashMap<String, String>();
-    static String studentStaffIDMethod;
-    static String userTypeSearch;
-    static String groupTypeSearch;
-    static String oUTypeSearch;
-    static String outputPath;
-    static int schoolChars = 10;
-    static String userToSchoolMethod;
+    private static LdapContext ctx = null;
+    private static String username;
+    private static String password;
+    private static String address;
+    private static String baseDN;
+    private static ArrayList<String> staffSearchOUs = new ArrayList<String>();
+    private static ArrayList<String> studentSearchOUs = new ArrayList<String>();
+    private static ArrayList<String> groupSearchOUs = new ArrayList<String>();
+    private static HashMap schoolToSisMap = new HashMap<String, String>();
+    private static String studentStaffIDMethod;
+    private static String userTypeSearch;
+    private static String groupTypeSearch;
+    private static String oUTypeSearch;
+    private static String outputPath;
+    public static int schoolChars = 10;
+    public static String userToSchoolMethod;
 
     // create array of user objects
-    static ArrayList<User> listOfUsers = new ArrayList<User>();
-    static HashSet<String> userIsPresent = new HashSet<String>();
+    private static ArrayList<User> listOfUsers = new ArrayList<User>();
+    private static HashSet<String> userIsPresent = new HashSet<String>();
 
     // create array of group objects
-    static ArrayList<Group> listOfGroups = new ArrayList<Group>();
+    private static ArrayList<Group> listOfGroups = new ArrayList<Group>();
 
     public static void main(String[] args) {
 
