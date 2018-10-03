@@ -21,14 +21,23 @@ public class Group {
         return cn;
     }
 
-    public static int getId() {
-        return id;
+
+    public String getSchoolSisId() {
+        return schoolSisId;
     }
+
+    public void setSubGroup(String subGroup){
+        this.subGroup.add(subGroup);
+    }
+
+
+
 
     public Group(String cn, String dn){
         this.cn = cn;
         this.dn = dn;
-        if (cn.startsWith("G_ADG_L")){
+        if (App.schoolToSisMap.containsKey(cn)){
+            this.schoolSisId = App.schoolToSisMap.get(cn).toString();
             this.schoolSisId = "leikskolar";
         }
         else{
@@ -38,18 +47,12 @@ public class Group {
         id++;
     }
 
-    public String getSchoolSisId() {
-        return schoolSisId;
-    }
-
     public void addMember(String member) {
         this.member.add(member);
         memberCount++;
     }
 
-    public void setSubGroup(String subGroup){
-        this.subGroup.add(subGroup);
-    }
+
 
     public String toString(){
         return cn;

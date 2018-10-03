@@ -30,6 +30,7 @@ public class App {
     static String oUTypeSearch;
     static String outputPath;
     static int schoolChars = 10;
+    static String userToSchoolMethod;
 
     // create array of user objects
     static ArrayList<User> listOfUsers = new ArrayList<User>();
@@ -102,7 +103,7 @@ public class App {
 
             // assign users to school SIS IDs based on the users preferred method
             System.out.println("How should users be placed into schools? Enter OU to sort by user OU, USERNAME to search based on a string in the user's name, or NONE to place all users into the top level: ");
-            String userToSchoolMethod = sc.nextLine();
+            userToSchoolMethod = sc.nextLine();
 
             if(userToSchoolMethod.equals("OU")){
                 String addAnother;
