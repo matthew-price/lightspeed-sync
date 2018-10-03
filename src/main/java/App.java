@@ -15,31 +15,35 @@ public class App {
     private static final String COMMA_DELIMITER = ",";
     private static final String NEW_LINE_DELIMITER = "\n";
     private static final String FILE_HEADER = "unique_sis_user_id,username,first_name,last_name,unique_sis_school_id,grade,email,user_type,password,authentication";
-    private static LdapContext ctx = null;
-    private static String username;
-    private static String password;
-    private static String address;
-    private static String baseDN;
-    private static ArrayList<String> staffSearchOUs = new ArrayList<String>();
-    private static ArrayList<String> studentSearchOUs = new ArrayList<String>();
-    private static ArrayList<String> groupSearchOUs = new ArrayList<String>();
-    private static HashMap schoolToSisMap = new HashMap<String, String>();
-    private static String studentStaffIDMethod;
-    private static String userTypeSearch;
-    private static String groupTypeSearch;
-    private static String oUTypeSearch;
-    private static String outputPath;
+    private LdapContext ctx = null;
+    private String username;
+    private String password;
+    private String address;
+    private String baseDN;
+    private ArrayList<String> staffSearchOUs = new ArrayList<String>();
+    private ArrayList<String> studentSearchOUs = new ArrayList<String>();
+    private ArrayList<String> groupSearchOUs = new ArrayList<String>();
+    private HashMap schoolToSisMap = new HashMap<String, String>();
+    private String studentStaffIDMethod;
+    private String userTypeSearch;
+    private String groupTypeSearch;
+    private String oUTypeSearch;
+    private String outputPath;
     public static int schoolChars = 10;
 
     // create array of user objects
-    private static ArrayList<User> listOfUsers = new ArrayList<User>();
-    private static HashSet<String> userIsPresent = new HashSet<String>();
+    private ArrayList<User> listOfUsers = new ArrayList<User>();
+    private HashSet<String> userIsPresent = new HashSet<String>();
 
     // create array of group objects
-    private static ArrayList<Group> listOfGroups = new ArrayList<Group>();
+    private ArrayList<Group> listOfGroups = new ArrayList<Group>();
 
     public static void main(String[] args) {
+        App app = new App();
+        app.run();
+    }
 
+    public void run() {
         askForServerDetails();
         createInitialContext(username, password, address); // creates the LDAP context
         runCreateUserObjects();
@@ -48,12 +52,10 @@ public class App {
         usersCsvWrite();
         groupCSVWrite();
         membershipsCSVWrite();
-
-        }
-
+    }
 
 
-    public static void askForServerDetails() {
+    private void askForServerDetails() {
         System.out.println("Read from config file? (yes/no)");
         String ouToAdd = new String();
         Scanner sc = new Scanner(System.in);
@@ -147,7 +149,7 @@ public class App {
             sc.close();
         }
 
-    public static void addAnOU(String ouType, String ou){
+    private void addAnOU(String ouType, String ou){
         Scanner sc = new Scanner(System.in);
         String confirmAdd = "";
         System.out.println("About to add the following OU: \n" + ou + "\n as a " + ouType + " ou. Does this look correct? Enter \"YES\" to accept, anything else to cancel.");
@@ -171,7 +173,7 @@ public class App {
     }
 
 
-    public static void createInitialContext(String username, String password, String address) {
+    private void createInitialContext(String username, String password, String address) {
         try {
             Hashtable<String, String> env = new Hashtable<String, String>();
             env.put(Context.INITIAL_CONTEXT_FACTORY,
@@ -194,7 +196,7 @@ public class App {
     }
 
 
-    public static void askForUserTypeDetails(){
+    private void askForUserTypeDetails(){
         Scanner sc = new Scanner(System.in);
         System.out.println("How should the system identify student vs staff users?: \n USERNAME for a string at the start of their username \n GROUP for a particular group membership \n OU for users in a particular OU \n NONE to make no attempt to identify student vs staff users: ");
         String identifyDecision = sc.nextLine();
@@ -223,7 +225,7 @@ public class App {
 
         }
 
-    public static void readConfigFile(){
+    private void readConfigFile(){
         System.out.println("Starting read from config.txt");
         try(FileInputStream fi = new FileInputStream("config.txt")){
             ObjectInputStream os = new ObjectInputStream(fi);
@@ -250,7 +252,7 @@ public class App {
         }
     }
 
-    public static void writeConfigFile(){
+    private void writeConfigFile(){
         System.out.println("Starting config write...");
         try (FileOutputStream fs = new FileOutputStream("config.txt")) {
             ObjectOutputStream os = new ObjectOutputStream(fs);
@@ -271,7 +273,7 @@ public class App {
     }
 
 
-    public static void createUserObjects(String baseDN){
+    private void createUserObjects(String baseDN){
         try {
             // Activate paged results - this is done in case more than a certain number of results are returned (AD by default limits the size of LDAP lookup returns)
             int pageSize = 1000;
@@ -338,18 +340,19 @@ public class App {
         }
 
         }
-    public static void runCreateUserObjects(){
+    private void runCreateUserObjects(){
         for(int i = 0; i < studentSearchOUs.size(); i++){
             createUserObjects(studentSearchOUs.get(i));
         }
     }
 
-    public static void runCreateGroupObjects(){
+    private void runCreateGroupObjects(){
         for (int i = 0; i < groupSearchOUs.size(); i++){
             createGroupObjects(groupSearchOUs.get(i));
         }
     }
-    public static void usersCsvWrite() {
+
+    private void usersCsvWrite() {
         System.out.println("Starting CSV write...");
         OutputStreamWriter os = null;
         try {
@@ -391,7 +394,8 @@ public class App {
         }
         //getListOfGroups();
     }
-    public static void groupCSVWrite() {
+
+    private void groupCSVWrite() {
         System.out.println("Starting CSV write...");
         OutputStreamWriter os = null;
         try {
@@ -423,7 +427,8 @@ public class App {
         }
         //getListOfGroups();
     }
-    public static void membershipsCSVWrite() {
+
+    private void membershipsCSVWrite() {
         System.out.println("Starting memberships CSV write...");
         OutputStreamWriter os = null;
         try {
@@ -451,7 +456,7 @@ public class App {
         }
         //getListOfGroups();
     }
-    public static void createGroupObjects(String groupbaseDN){ //creates group objects, and adds memberships
+    private void createGroupObjects(String groupbaseDN){ //creates group objects, and adds memberships
         try {
             SearchControls constraints = new SearchControls();
             constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
@@ -482,7 +487,7 @@ public class App {
         }
         }
 
-    public static void getGroupMembers(String baseDN){
+    private void getGroupMembers(String baseDN){
         for(int i = 0; i < listOfGroups.size(); i++){
             // get user members and add them
             String groupDN = listOfGroups.get(i).getDn();
@@ -507,7 +512,7 @@ public class App {
 
     }
 
-    public static void getSubGroups(){
+    private void getSubGroups(){
         for(int i = 0; i<listOfGroups.size(); i++){
             // get list of sub groups
             String groupCN = listOfGroups.get(i).toString();
