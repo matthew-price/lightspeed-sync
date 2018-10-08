@@ -53,6 +53,8 @@ public class App {
         usersCsvWrite();
         groupCSVWrite();
         membershipsCSVWrite();
+        Server server = new Server();
+        server.run();
     }
 
 
