@@ -23,7 +23,7 @@ public class App {
     private static ArrayList<String> staffSearchOUs = new ArrayList<String>();
     private static ArrayList<String> studentSearchOUs = new ArrayList<String>();
     private static ArrayList<String> groupSearchOUs = new ArrayList<String>();
-    private static HashMap schoolToSisMap = new HashMap<String, String>();
+    static HashMap schoolToSisMap = new HashMap<String, String>();
     private static String studentStaffIDMethod;
     private static String userTypeSearch;
     private static String groupTypeSearch;
