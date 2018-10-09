@@ -20,6 +20,7 @@ public class App {
     private int port;
     private boolean ldaps;
     private String outputPath;
+    public ArrayList<School> schools;
 
     // create array of user objects
     protected static ArrayList<User> listOfUsers = new ArrayList<User>();

@@ -102,7 +102,7 @@ public class CSVWriter {
         osGroups.append(NEW_LINE_DELIMITER);
     }
 
-    private void appendMemberships(String username, String group) throws IOException{
+    public void appendMemberships(String username, String group) throws IOException{
         osMemberships.append(group + COMMA_DELIMITER + username + COMMA_DELIMITER + schoolSisId + COMMA_DELIMITER + 0);
         osMemberships.append(NEW_LINE_DELIMITER);
     }
