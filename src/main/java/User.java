@@ -7,7 +7,9 @@ public class User {
     String mail;
     String title;
     int userType;
-
+    int grade;
+    int authType;
+    String password;
 
     public String getTitle() {
         return title;
@@ -24,7 +26,8 @@ public class User {
         this.mail = mail;
         this.title = title;
         this.dn = dn;
-        System.out.println("******** DN is: " + dn);
+        password = "";
+        authType = 0;
     }
 
     public String getSn() {
@@ -33,6 +36,22 @@ public class User {
 
     public void setSn(String sn) {
         this.sn = sn;
+    }
+
+    public int getGrade(){
+        return grade;
+    }
+
+    public int getType(){
+        return userType;
+    }
+
+    public String getPassword(){
+        return password;
+    }
+
+    public int getAuthType(){
+        return authType;
     }
 
     public String getGivenname() {

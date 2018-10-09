@@ -326,7 +326,7 @@ public class Testing {
                     while(answer.hasMoreElements()){
                         Attributes attrs = ((SearchResult) answer.next()).getAttributes();
                         String member = attrs.get("samaccountname").get().toString();
-                        listOfGroups.get(i).addMember(member);
+                       // listOfGroups.get(i).addMember(member);
                         System.out.println("Group name: " + listOfGroups.get(i).toString());
                         System.out.println(" contains: " + member);
                     }
