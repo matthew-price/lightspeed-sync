@@ -1,10 +1,12 @@
 import javax.naming.AuthenticationException;
 import javax.naming.Context;
 import javax.naming.NamingEnumeration;
+import javax.naming.NamingException;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 import javax.naming.ldap.*;
+import java.io.IOException;
 import java.util.Hashtable;
 
 public class Server {
@@ -21,20 +23,20 @@ public class Server {
     LdapContext ctx = null;
 
 
-    public Server(String username, String password, String hostname, boolean ldaps, int port, String school, String basedn){
+    public Server(String username, String password, String hostname, boolean ldaps, int port, String basedn){
         this.username = username;
         this.password = password;
         this.hostname = hostname;
         this.ldaps = ldaps;
         this.port = port;
-        this.school = school;
         this.basedn = basedn;
     }
 
     protected void run(){
         connectToServer();
-
-
+        LDAPLookup("user", basedn, "(& (samaccountname=*) (givenname=*) (sn=*) (mail=*) (title=*))");
+        LDAPLookup("group", basedn,"(member=*)");
+        LDAPLookup("membership", basedn, "(& (objectCategory=Group) (member=*");
 
     }
 
@@ -63,14 +65,16 @@ public class Server {
 
     }
 
-    private void LDAPLookup(String objectType, String searchBase){
+    private void LDAPLookup(String searchType, String searchBase, String filter){
 
         try {
             // Activate paged results - this is done in case more than a certain number of results are returned (AD by default limits the size of LDAP lookup returns)
             int pageSize = 1000;
             byte[] cookie = null;
-            ctx.setRequestControls(new Control[] { new PagedResultsControl(pageSize, Control.NONCRITICAL) });
+            ctx.setRequestControls(new Control[]{new PagedResultsControl(pageSize, Control.NONCRITICAL)});
             int total;
+
+
             SearchControls constraints = new SearchControls();
             constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
             String[] attrIDs = {"samaccountname",
@@ -78,62 +82,69 @@ public class Server {
                     "sn",
                     "mail",
                     "title",
-                    "distinguishedName"};
+                    "distinguishedName",
+                    "member"};
             constraints.setReturningAttributes(attrIDs);
+
+
             do {
-                NamingEnumeration answer = ctx.search(baseDN, "(& (samaccountname=*) (givenname=*) (sn=*) (mail=*) (title=*))", constraints);
+                NamingEnumeration answer = ctx.search(basedn, filter, constraints);
                 while (answer.hasMoreElements()) {
                     Attributes attrs = ((SearchResult) answer.next()).getAttributes();
                     String samaccountname = attrs.get("samaccountname").get().toString();
-                    if(!userIsPresent.contains(samaccountname)) { //check whether the samaccountname already exists, to avoid duplicates
+
+                    if (searchType.equals("user")) {
                         String givenname = attrs.get("givenname").get().toString();
                         String sn = attrs.get("sn").get().toString();
                         String mail = attrs.get("mail").get().toString();
                         String title = attrs.get("title").get().toString();
                         String dn = attrs.get("distinguishedName").get().toString();
-                        //String tokenGroups = attrs.get("tokenGroups").get().toString();
-                        //System.out.println(tokenGroups);
                         User user = new User(sn, givenname, samaccountname, mail, title, dn);
-                        listOfUsers.add(user);
-                        userIsPresent.add(samaccountname);
-                    }
-                }
+                        App.listOfUsers.add(user);
 
-                for (int i = 0; i < listOfUsers.size(); i++) {
-                    System.out.println(listOfUsers.get(i));
-                }
-                Control[] controls = ctx.getResponseControls();
-                if (controls != null) {
-                    for (int i = 0; i < controls.length; i++) {
-                        if (controls[i] instanceof PagedResultsResponseControl) {
-                            PagedResultsResponseControl prrc = (PagedResultsResponseControl) controls[i];
-                            total = prrc.getResultSize();
-                            if (total != 0) {
-                                System.out.println("***************** END-OF-PAGE "
-                                        + "(total : " + total + ") *****************\n");
-                            } else {
-                                System.out.println("***************** END-OF-PAGE "
-                                        + "(total: unknown) ***************\n");
-                            }
-                            cookie = prrc.getCookie();
-                        }
+                    } else if (searchType.equals("group")) {
+                        String cn = attrs.get("cn").get().toString();
+                        String dn = attrs.get("distinguishedName").get().toString();
+                        String member = attrs.get("member").get().toString();
+                        Group group = new Group(cn, dn);
+                        App.listOfGroups.add(group);
                     }
-                } else {
-                    System.out.println("No controls were sent from the server");
+
+
+                    Control[] controls = ctx.getResponseControls();
+                    if (controls != null) {
+                        for (int i = 0; i < controls.length; i++) {
+                            if (controls[i] instanceof PagedResultsResponseControl) {
+                                PagedResultsResponseControl prrc = (PagedResultsResponseControl) controls[i];
+                                total = prrc.getResultSize();
+                                if (total != 0) {
+                                    System.out.println("***************** END-OF-PAGE "
+                                            + "(total : " + total + ") *****************\n");
+                                } else {
+                                    System.out.println("***************** END-OF-PAGE "
+                                            + "(total: unknown) ***************\n");
+                                }
+                                cookie = prrc.getCookie();
+                            }
+                        }
+                    } else {
+                        System.out.println("No controls were sent from the server");
+                    }
+                    // Re-activate paged results
+                    ctx.setRequestControls(new Control[]{new PagedResultsControl(
+                            pageSize, cookie, Control.CRITICAL)});
                 }
-                // Re-activate paged results
-                ctx.setRequestControls(new Control[] { new PagedResultsControl(
-                        pageSize, cookie, Control.CRITICAL) });
-            } while (cookie != null);
+            } while (cookie != null) ;
         }
-        catch (Exception ex) {
+        catch (NamingException ex){
             ex.printStackTrace();
         }
+        catch (IOException io){
+            io.printStackTrace();
+        }
 
     }
 
 
     }
 
-
-}
