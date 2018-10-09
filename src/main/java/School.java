@@ -4,12 +4,14 @@ import java.util.HashMap;
 public class School {
     private String name;
     private String schoolSisID;
+    private String parentGroupId;
     private HashMap<String, User> users;
     private ArrayList<Group> groups;
 
-    public School(String name, String schoolSisID){
+    public School(String name, String schoolSisID, String parentGroupId){
         this.name = name;
         this.schoolSisID = schoolSisID;
+        this.parentGroupId = parentGroupId;
         users = new HashMap<String, User>();
         groups = new ArrayList<Group>();
     }
@@ -42,6 +44,10 @@ public class School {
 
     public String getSisID(){
         return schoolSisID;
+    }
+
+    public String getParentGroupId(){
+        return parentGroupId;
     }
 
     public int countUsers(){

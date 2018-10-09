@@ -20,7 +20,6 @@ public class App {
     private int port;
     private boolean ldaps;
     private String outputPath;
-    public ArrayList<School> schools;
 
     // create array of user objects
     protected static ArrayList<User> listOfUsers = new ArrayList<User>();
@@ -54,7 +53,7 @@ public class App {
         School school;
         if (sc.nextLine().equals("yes")) {
             readConfigFile();
-            school = new School("a","a");
+            school = new School("a","a", "parent");
         } else {
             // get server details from user
             System.out.println("Enter server IP address or hostname, e.g. 192.168.0.1 or dc1.local");
@@ -80,7 +79,10 @@ public class App {
 
             System.out.println("What is the school SIS ID in Lightspeed?");
             String sis = sc.nextLine();
-            school = new School(sis, sis);
+            school = new School(sis, sis, "parent");
+
+            System.out.println("What is the parent group SIS ID in Lightspeed?");
+            String parentSis = sc.nextLine();
 
             System.out.println("Finally, where should we save the exported files?");
             outputPath = sc.nextLine();
