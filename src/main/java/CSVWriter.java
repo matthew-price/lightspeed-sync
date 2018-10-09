@@ -69,8 +69,6 @@ public class CSVWriter {
             osUsers.close();
         }
 
-
-
         if (writingGroups == true) {
             ArrayList<Group> groups = school.getGroups();
             for (int i = 0; i < school.countGroups() ; i++){
@@ -79,11 +77,22 @@ public class CSVWriter {
             }
             osGroups.close();
         }
+
+        if (writingMemberships == true){
+            ArrayList<Group> groups = school.getGroups();
+            for (int i = 0; i < school.countGroups(); i++){
+                Group group = school.getGroup(i);
+                for(int m = 0; m < group.getMemberCount(); m++){
+                    appendMemberships(group.getMember(m), group.getCN());
+                    System.out.println("TRYING TO APPEND: " + group.getMember(m) + " to GROUP: " + group.getCN() + "MEMBERCOUNT IS: " + group.getMemberCount());
+                }
+            }
+            osMemberships.close();
+        }
+
     }
 
     private void appendUsers(User user) throws IOException{
-        System.out.println("APPENDUSER");
-        System.out.println("APPENDUSER IS: " + user.toString());
         osUsers.append(user.getSamaccountname() + COMMA_DELIMITER + user.getSamaccountname() + COMMA_DELIMITER + user.getGivenname() + COMMA_DELIMITER + user.getSn() + COMMA_DELIMITER + school.getSisID() + COMMA_DELIMITER + user.getGrade() + COMMA_DELIMITER + user.getMail() + COMMA_DELIMITER + user.getType() + COMMA_DELIMITER + user.getPassword() + COMMA_DELIMITER + user.getAuthType());
         osUsers.append(NEW_LINE_DELIMITER);
     }
@@ -92,4 +101,10 @@ public class CSVWriter {
         osGroups.append(group.getCN() + COMMA_DELIMITER + group.getCN() + COMMA_DELIMITER + "groupOwner" +  COMMA_DELIMITER + school.getSisID() + COMMA_DELIMITER);
         osGroups.append(NEW_LINE_DELIMITER);
     }
+
+    private void appendMemberships(String username, String group) throws IOException{
+        osMemberships.append(group + COMMA_DELIMITER + username + COMMA_DELIMITER + schoolSisId + COMMA_DELIMITER + 0);
+        osMemberships.append(NEW_LINE_DELIMITER);
+    }
+
 }

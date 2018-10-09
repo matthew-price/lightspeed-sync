@@ -48,7 +48,8 @@ public class Server {
         LDAPLookup("group", basedn,"(& (objectCategory=Group) (member=*))", school, group);
         ArrayList <Group> groups = school.getGroups();
         for(int i = 0; i < school.countGroups(); i++){
-            LDAPLookup("membership", basedn, "(& (objectCategory=Group) (memberOf=" + groups.get(i).getDn() + "))", school, groups.get(i));
+            Group group = school.getGroup(i);
+            LDAPLookup("membership", basedn, "(& (samaccountname=*) (objectCategory=User) (memberOf=" + groups.get(i).getDn() + "))", school, groups.get(i));
         }
 
     }
@@ -123,9 +124,11 @@ public class Server {
                         Group newGroup = new Group(cn, dn);
                         school.addGroup(newGroup);
 
-                    } else if (searchType.equals("memberships")){
-                        String cn = attrs.get("cn").get().toString();
+                    } else if (searchType.equals("membership")){
+                        System.out.println("TRYING TO ADD A MEMBERSHIP");
+                        System.out.println("SEARCHING FOR USER: " + samaccountname);
                         if(school.hasUser(samaccountname) == true){
+                            System.out.println("USER FOUND!");
                             group.addMember(school.getUser(samaccountname));
                         }
                     }
