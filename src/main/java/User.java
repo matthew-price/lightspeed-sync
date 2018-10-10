@@ -5,26 +5,17 @@ public class User {
     String givenname;
     String samaccountname;
     String mail;
-    String title;
     int userType;
     int grade;
     int authType;
     String password;
 
-    public String getTitle() {
-        return title;
-    }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public User(String sn, String givenname, String samaccountname, String mail, String title, String dn){
+    public User(String sn, String givenname, String samaccountname, String mail, String dn){
         this.sn = sn;
         this.givenname = givenname;
         this.samaccountname = samaccountname;
         this.mail = mail;
-        this.title = title;
         this.dn = dn;
         password = "";
         authType = 0;
@@ -84,6 +75,6 @@ public class User {
 
     @Override
     public String toString() {
-        return "SN: " + sn + " Given Name: " + givenname + " SAMAccountName: "  + samaccountname + " Email: " + mail + " Title: " + title;
+        return "SN: " + sn + " Given Name: " + givenname + " SAMAccountName: "  + samaccountname + " Email: " + mail;
     }
 }

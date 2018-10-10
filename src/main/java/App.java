@@ -1,6 +1,7 @@
 import javax.naming.AuthenticationException;
 import javax.naming.Context;
 import javax.naming.NamingEnumeration;
+import javax.naming.NamingException;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
@@ -17,9 +18,20 @@ public class App {
     private String password;
     private String address;
     private String baseDN;
+    private String groupBaseDN;
+    private String groupSisId;
+    private String sis;
     private int port;
     private boolean ldaps;
     private String outputPath;
+    private final String[] attrIDs = {"samaccountname",
+            "cn",
+            "name",
+            "givenname",
+            "sn",
+            "mail",
+            "distinguishedName",
+            "member"};
 
     // create array of user objects
     protected static ArrayList<User> listOfUsers = new ArrayList<User>();
@@ -27,17 +39,17 @@ public class App {
     // create array of group objects
     protected static ArrayList<Group> listOfGroups = new ArrayList<Group>();
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws NamingException, IOException{
         App app = new App();
         app.run();
     }
 
-    public void run() {
+    public void run() throws  NamingException, IOException{
         School school = askForServerDetails();
-        Server server = new Server(username, password, address, ldaps, port, baseDN, school);
-        server.run();
+        Server server = new Server(username, password, address, ldaps, port, baseDN, groupBaseDN, attrIDs);
+        server.run(school);
         try {
-            CSVWriter csv = new CSVWriter(outputPath, school, true, true, true);
+            CSVWriter csv = new CSVWriter(outputPath, school, true, true, false, true);
             csv.run();
         } catch (IOException ex){
             ex.printStackTrace();
@@ -53,7 +65,7 @@ public class App {
         School school;
         if (sc.nextLine().equals("yes")) {
             readConfigFile();
-            school = new School("a","a", "parent");
+            school = new School(sis,"a", "parent");
         } else {
             // get server details from user
             System.out.println("Enter server IP address or hostname, e.g. 192.168.0.1 or dc1.local");
@@ -74,15 +86,19 @@ public class App {
             password = sc.nextLine();
 
             // get base DN details from user
-            System.out.println("What is the root base DN? (The search base will be set later): ");
+            System.out.println("What is the root base DN for users?");
             baseDN = sc.nextLine();
 
+            System.out.println("What is the root base DN for groups?");
+            groupBaseDN = sc.nextLine();
+
             System.out.println("What is the school SIS ID in Lightspeed?");
-            String sis = sc.nextLine();
-            school = new School(sis, sis, "parent");
+            sis = sc.nextLine();
 
             System.out.println("What is the parent group SIS ID in Lightspeed?");
-            String parentSis = sc.nextLine();
+            groupSisId = sc.nextLine();
+
+            school = new School(sis, sis, groupSisId);
 
             System.out.println("Finally, where should we save the exported files?");
             outputPath = sc.nextLine();
@@ -90,7 +106,6 @@ public class App {
             System.out.println("---Saving your settings---");
             System.out.println("*****");
             writeConfigFile();
-            return school;
             }
         sc.close();
         return school;
@@ -104,6 +119,9 @@ public class App {
             username = (String)os.readObject();
             password = (String)os.readObject();
             baseDN = (String)os.readObject();
+            groupBaseDN = (String)os.readObject();
+            sis = (String)os.readObject();
+
             outputPath = (String)os.readObject();
             System.out.println("Config file read successfully.");
             System.out.println("****Address is: " + address);
@@ -128,6 +146,8 @@ public class App {
             os.writeObject(username);
             os.writeObject(password);
             os.writeObject(baseDN);
+            os.writeObject(groupBaseDN);
+            os.writeObject(sis);
             os.writeObject(outputPath);
             System.out.println("Config file written successfully.");
         } catch (IOException e) {

@@ -7,6 +7,7 @@ public class School {
     private String parentGroupId;
     private HashMap<String, User> users;
     private ArrayList<Group> groups;
+    private ArrayList<OU> ous;
 
     public School(String name, String schoolSisID, String parentGroupId){
         this.name = name;
@@ -14,6 +15,7 @@ public class School {
         this.parentGroupId = parentGroupId;
         users = new HashMap<String, User>();
         groups = new ArrayList<Group>();
+        ous = new ArrayList<OU>();
     }
 
     public void addUser(String username, User user){
@@ -26,6 +28,10 @@ public class School {
         groups.add(group);
     }
 
+    public void addOU(OU ou){
+        ous.add(ou);
+    }
+
     public HashMap<String, User> getUsers(){
         return users;
     }
@@ -36,6 +42,10 @@ public class School {
 
     public ArrayList<Group> getGroups(){
         return groups;
+    }
+
+    public ArrayList<OU> getOUs(){
+        return ous;
     }
 
     public Group getGroup(int i){

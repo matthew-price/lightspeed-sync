@@ -144,7 +144,7 @@ public class Testing {
                         String cn = "testing";
                         //String tokenGroups = attrs.get("tokenGroups").get().toString();
                         //System.out.println(tokenGroups);
-                        User user = new User(sn, givenname, samaccountname, mail, title, cn);
+                        User user = new User(sn, givenname, samaccountname, mail, cn);
                         listOfUsers.add(user);
                     }
 
@@ -204,11 +204,7 @@ public class Testing {
                     fileWriter.append(listOfUsers.get(i).getMail());
                     fileWriter.append(COMMA_DELIMITER);
                     //user_type field below
-                    if(listOfUsers.get(i).title.equals("Nemandi")){
-                        fileWriter.append("1");
-                    } else {
-                        fileWriter.append("2");
-                    }
+                    fileWriter.append("1");
                     fileWriter.append(COMMA_DELIMITER);
                     //password would go below, leaving blank, assuming directory authentication
                     fileWriter.append(COMMA_DELIMITER);
