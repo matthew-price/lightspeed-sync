@@ -39,6 +39,10 @@ public class App {
     // create array of group objects
     protected static ArrayList<Group> listOfGroups = new ArrayList<Group>();
 
+    public  String[] getAttrIds(){
+        return attrIDs;
+    }
+
     public static void main(String[] args) throws NamingException, IOException{
         App app = new App();
         app.run();

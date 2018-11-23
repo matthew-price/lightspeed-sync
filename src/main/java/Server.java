@@ -1,3 +1,8 @@
+import javafx.beans.InvalidationListener;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
+
 import javax.naming.AuthenticationException;
 import javax.naming.Context;
 import javax.naming.NamingEnumeration;
@@ -7,8 +12,7 @@ import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 import javax.naming.ldap.*;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.*;
 
 public class Server {
 
@@ -25,6 +29,7 @@ public class Server {
     private Group group;
     private String[] attrIDs;
     LdapContext ctx = null;
+
 
 
     public Server(String username, String password, String hostname, boolean ldaps, int port, String basedn, String groupBaseDN, String[] attrIDs){
@@ -69,6 +74,7 @@ public class Server {
             env.put(Context.SECURITY_CREDENTIALS, password);
             env.put(Context.PROVIDER_URL, address);
             ctx = new InitialLdapContext(env, null);
+            System.out.println("Connection successful");
 
         } catch (AuthenticationException e){
             System.out.println("Problem with authentication. Bad username/password/security settings?");
@@ -245,6 +251,64 @@ public class Server {
         }
     }
 
+    private ObservableList<OU> searchForOU(String searchQuery)throws Exception{
+        SearchControls constraints = new SearchControls();
+        constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
+        constraints.setReturningAttributes(attrIDs);
+        NamingEnumeration answer = ctx.search(basedn, "(&(ObjectClass=OU)(cn=*"+searchQuery+"*))", constraints);
 
+        ObservableList<OU> searchResults = FXCollections.observableArrayList();
+        School searchSchool = new School("searchSchool", "", "");
+
+        while(answer.hasMoreElements()){
+            Attributes attrs = ((SearchResult) answer.next()).getAttributes();
+            String ouName = attrs.get("distinguishedName").get().toString();
+            OU ou = new OU(ouName, ouName, searchSchool);
+            searchResults.add(ou);
+        }
+
+        return searchResults;
     }
+
+    public ObservableList<OU> uiSearchForOUs(String searchQuery, Boolean isAnOu){
+        SearchControls constraints = new SearchControls();
+        constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
+        constraints.setReturningAttributes(attrIDs);
+
+        ObservableList<OU> ouData = FXCollections.observableArrayList();
+
+        // Searching for an OU or a group?
+        String type = "";
+        if(isAnOu == true){
+            type = "OrganizationalUnit";
+        } else {
+            type = "Group";
+        }
+
+        try {
+            System.out.println("HOSTNAME is: " + hostname);
+            System.out.println("BASEDN is: " + basedn);
+            System.out.println("TYPE is: " + type);
+            System.out.println("QUERY is: " + searchQuery);
+            connect();
+            NamingEnumeration answer = ctx.search(basedn, "(&(ObjectClass=" + type + ")(name=" + searchQuery + "))", constraints);
+            School searchSchool = new School("searchSchool", "", "");
+            System.out.println("After school created");
+            while(answer.hasMoreElements()){
+                System.out.println("Answer has element!");
+                Attributes attrs = ((SearchResult) answer.next()).getAttributes();
+                //String ouName = attrs.get("name").get().toString();
+                String dn = attrs.get("distinguishedName").get().toString();
+                Server server = new Server("DARKSPEED\\Administrator","Jstv979a!!","192.168.101.9",true,636,"dc=darkspeed,dc=local","dc=darkspeed,dc=local", attrIDs);
+                OU ou = new OU(dn, dn, searchSchool, isAnOu, server);
+                System.out.println("Found OU: "+dn);
+                ouData.add(ou);
+            }
+        } catch (NamingException e){
+            e.printStackTrace();
+        }
+
+        return ouData;
+    }
+}
 
