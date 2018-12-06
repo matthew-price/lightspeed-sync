@@ -59,12 +59,13 @@
                                 <Label text="Label" GridPane.columnIndex="1" GridPane.rowIndex="5" />
                             </children>
                         </GridPane>
-                        <ButtonBar layoutX="152.0" layoutY="252.0" prefHeight="40.0" prefWidth="200.0" AnchorPane.rightAnchor="10.0">
+                        <ButtonBar layoutX="152.0" layoutY="252.0" prefHeight="40.0" prefWidth="200.0" AnchorPane.bottomAnchor="10.0" AnchorPane.rightAnchor="10.0">
                             <buttons>
                         <Button mnemonicParsing="false" onAction="#handleAddServer" text="Server+" />
                                 <Button mnemonicParsing="false" onAction="#handleNewPerson" text="New..." />
                                 <Button mnemonicParsing="false" onAction="#handleEditPerson" text="Edit..." />
                                 <Button mnemonicParsing="false" onAction="#handleDeletePerson" text="Delete" />
+                        <Button mnemonicParsing="false" text="Run..." />
                             </buttons>
                         </ButtonBar>
                     </children>

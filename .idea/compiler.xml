@@ -10,7 +10,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="adExportTool" target="7" />
+      <module name="adExportTool" target="8" />
     </bytecodeTargetLevel>
   </component>
 </project>
